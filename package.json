@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "foundryQuickStatusModule",
+  "name": "foundry-quick-status-select-module",
   "version": "0.1.0",
-  "description": "",
+  "description": "a quick status select module for dnd 5e",
   "scripts": {
     "package": "gulp package",
     "build": "gulp build && gulp link",
