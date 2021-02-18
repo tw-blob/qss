@@ -1,28 +1,10 @@
 {
-	"name": "foundryQuickStatusModule",
-	"title": "foundryQuickStatusModule",
-	"description": "quick status select module",
-	"systems": ["dnd5e"],
-	"version": "1.0.0",
-	"authors": [
-		{
-			"name": "Jeremiah Verba",
-			"email": "jeremiah.verba@gmail.com",
-			"url": ""
-		}
-	],
-	"esmodules": [
-		"foundryQuickStatusModule.js"
-	],
-	"styles": [
-		"foundryQuickStatusModule.css"
-	],
-	"languages": ["en"],
-	"minimumCoreVersion": "0.7.8",
-	"compatibleCoreVersion": "0.7.9",
-	"url": "https://github.com/jeremiahverba/qss",
-	"manifest": "https://github.com/jeremiahverba/qss/master/src/module.json",
-	"download": "https://github.com/jeremiahverba/qss/v1.0.0/package/foundryQuickStatusModule-v1.0.0.zip",
-	"readme": "",
-	"bugs": ""
+  "name": "quick-status-select",
+  "title": "Quick Status Select DND 5e",
+  "description": "a quick status select module",
+  "version": "1.0.0",
+  "author": "exodu",
+  "esmodules": ["./qss.js"],
+  "styles": ["./qss.css"],
+  "minimumCoreVersion": "0.5.0"
 }
