@@ -1,15 +1,21 @@
-import { registerSettings } from '../module/settings.js';
 import { preloadTemplates } from '../module/preloadTemplates.js';
+import { registerSettings } from '../module/settings.js';
+import { log } from './log.js';
 Hooks.once('init', async function () {
-    console.log('quick-status-select | Initializing quick-status-select');
+    log('Initializing quick-status-select');
     registerSettings();
     await preloadTemplates();
-    // Register custom sheets (if any)
 });
 Hooks.once('setup', function () {
     // Do anything after initialization but before
     // ready
 });
-Hooks.once('ready', function () {
-    // Do anything once the module is ready
+Hooks.once('ready', () => {
+    log('got ready hook!');
+});
+Hooks.once('canvasReady', () => {
+    log('got canvas ready hook!', game, canvas);
+    Hooks.on('controlToken', (token, isSomething) => {
+        log('got token control hook!', token, isSomething);
+    });
 });
