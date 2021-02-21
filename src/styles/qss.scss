@@ -1,0 +1,349 @@
+#quick-status-select {
+  z-index: 99;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  top: 80px;
+  left: 150px;
+  position: fixed;
+  height: auto;
+  width: auto;
+  margin: 5px;
+  background: none;
+  font-size: small;
+}
+
+#quick-status-select [class*='icon-'] {
+  display: inline-block;
+  width: 100%;
+}
+
+#quick-status-select:hover > #qss-reposition,
+#quick-status-select:hover > #qss-categories {
+  display: block;
+  position: absolute;
+}
+
+#qss-hudTitle {
+  color: #fff;
+  padding: 0.25em;
+  margin: 0.25em;
+  text-shadow: -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1);
+  text-align: left;
+  pointer-events: none;
+  position: absolute;
+  top: -25px !important;
+}
+
+#qss-reposition,
+#qss-categories {
+  display: none;
+  font-style: normal;
+  font-weight: normal;
+}
+
+#qss-reposition:hover,
+#qss-categories:hover {
+  cursor: pointer;
+}
+
+#qss-reposition {
+  left: -20px;
+}
+
+#qss-categories {
+  left: 100%;
+}
+
+#qss-reposition > .fa,
+#qss-reposition > .fas,
+#qss-categories > .fa,
+#qss-categories > .fas {
+  color: #ddd;
+  padding: 3px;
+  margin: 3px;
+  text-shadow: -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1);
+  text-align: center;
+  pointer-events: none;
+}
+
+#qss-reposition > .fa,
+#qss-reposition > .fas {
+  font-size: small;
+}
+
+#qss-categories > .fa,
+#qss-categories > .fas {
+  font-size: large;
+}
+
+#qss-reposition:hover > i,
+#qss-categories:hover > i {
+  text-shadow: 0 0 10px #ff6400;
+  color: #fff;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.qss-category {
+  position: relative;
+  display: block;
+  cursor: default;
+}
+
+.qss-title-button {
+  width: auto;
+  height: auto;
+  color: #ddd;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 3px;
+  margin: 3px;
+  border: 1px solid #000;
+}
+
+.qss-title-button:hover {
+  color: #fff;
+  font-weight: normal;
+  color: #fff;
+  border: 1px solid red;
+  border-bottom: 1px solid #ff6400;
+  box-shadow: 0 0 10px #ff6400;
+  cursor: pointer;
+}
+
+.qss-title-button > .fa,
+.qss-title-button > .fas {
+  visibility: hidden;
+  width: auto;
+  height: auto;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  font-size: 6px;
+  padding: 3px;
+  margin: 1px;
+  border: 1px solid transparent;
+  pointer-events: none;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.qss-title-button:hover > .fa,
+.qss-title-button:hover > .fas {
+  visibility: visible;
+  cursor: pointer;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.qss-content {
+  display: none;
+}
+
+/* Show the dropdown menu on hover */
+.qss-category.hover .qss-content {
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+  position: absolute;
+  left: -155px;
+  background: none;
+}
+
+.qss-subcategory {
+  display: grid;
+  grid-template-columns: 150px auto;
+  grid-auto-rows: auto;
+  min-height: 33px;
+  cursor: default;
+}
+
+.qss-subtitle {
+  position: relative;
+  grid-column: 1;
+  padding: 10px 8px 0px 0px;
+  margin: 0px;
+  min-width: 150px;
+  color: #fff;
+  text-shadow: -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1);
+  font-size: small;
+  text-align: right;
+  line-height: 1em;
+}
+
+.qss-filterholder {
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 0px;
+  right: 5px;
+}
+
+.qss-subtitle > .qss-filterholder > .fa,
+.qss-subtitle > .qss-filterholder > .fas {
+  visibility: hidden;
+  width: auto;
+  height: auto;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  font-size: 6px;
+  border: 1px solid transparent;
+  pointer-events: none;
+  position: absolute;
+  top: 3px;
+  left: -3px;
+}
+
+.qss-subtitle:hover > .qss-filterholder > .fa,
+.qss-subtitle:hover > .qss-filterholder > .fas {
+  visibility: visible;
+}
+
+.qss-actions {
+  grid-column: 2;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  width: 400px;
+}
+
+.qss-actions .stickLeft {
+  width: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0px;
+  margin: 0px;
+  font-size: small;
+  font-weight: bold;
+  text-align: center;
+  line-height: 0px;
+  position: relative;
+  left: -1px;
+}
+
+.qss-actions .shrink {
+  width: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0px;
+  margin: 0px 0px 0px 3px;
+  font-size: small;
+  font-weight: bold;
+  text-align: center;
+  line-height: 0px;
+}
+
+.qss-actionSet {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.qss-action {
+  flex-grow: 0;
+  flex-basis: auto;
+  padding: 3px 0px 3px 0px;
+  margin: 3px 0px 3px 6px;
+  background: none;
+
+  button {
+    width: 100%;
+    min-width: 50px;
+    font-size: small;
+    text-decoration: none;
+    color: #ddd;
+    border: 1px solid #000;
+    background: rgba(0, 0, 0, 0.7);
+
+    :hover {
+      border: 1px solid red;
+      border-bottom: 1px solid #ff6400;
+      box-shadow: 0 0 10px #ff6400;
+      color: #fff;
+      cursor: pointer;
+      font-weight: inherit;
+    }
+
+    .active {
+      background: rgba(85, 17, 0, 0.7);
+    }
+  }
+
+  .qss-img {
+    border: 1px solid rgba(129, 129, 129, 0.877);
+  }
+}
+
+.qss-info1,
+.qss-info2,
+.qss-info3 {
+  display: inline;
+  font-size: smaller;
+}
+
+.qss-info1 {
+  text-shadow: 0 0 1px rgba(2, 248, 14, 0.95), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1),
+    -1px -1px 1px rgba(52, 52, 52, 1);
+}
+
+.qss-info2 {
+  text-shadow: 0 0 1px rgba(240, 2, 248, 0.95), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1),
+    -1px -1px 1px rgba(52, 52, 52, 1);
+}
+
+.qss-info3 {
+  text-shadow: 0 0 1px rgba(2, 240, 248, 0.95), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1),
+    -1px -1px 1px rgba(52, 52, 52, 1);
+}
+
+.qss-icon {
+  display: inline;
+}
+
+.qss-img {
+  display: inline;
+  padding: 4px 12px 4px 12px;
+  margin: 0px 5px 0px 0px;
+  border-radius: 3px;
+}
+
+.qss-action .qss-icon > .fa,
+.qss-icon > .fas {
+  font-size: x-small;
+  margin: 0px 2px 0px 0px;
+}
+
+.qss-subtitle > .qss-icon > .fa,
+.qss-subtitle > .qss-icon > .fas {
+  text-shadow: 0 0 1px rgb(255, 255, 255), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1), -1px -1px 1px rgba(52, 52, 52, 1),
+    -1px -1px 1px rgba(52, 52, 52, 1);
+}
+
+.qss-info1:before {
+  content: ' (';
+}
+
+.qss-info1:after {
+  content: ')';
+}
+
+.qss-info2:before {
+  content: ' [';
+}
+
+.qss-info2:after {
+  content: ']';
+}
+
+.qss-info3:before {
+  content: ' {';
+}
+
+.qss-info3:after {
+  content: '}';
+}
+
+.qss-action .qss-status-icon {
+  max-width: 10px;
+  max-height: 10px;
+  margin: auto;
+}
