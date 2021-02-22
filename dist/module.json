@@ -5,7 +5,7 @@
   "version": "1.0.1",
   "author": "exodu",
   "esmodules": ["./scripts/qss.js"],
-  "styles": ["./assets/qss.css"],
+  "styles": ["./styles/qss.css"],
   "minimumCoreVersion": "0.5.0",
   "license": "LICENSE",
   "url": "https://github.com/jeremiahverba/qss",

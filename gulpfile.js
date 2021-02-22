@@ -141,7 +141,7 @@ function buildSASS() {
  * Copy static files
  */
 async function copyFiles() {
-  const statics = ['lang', 'fonts', 'assets', 'templates', 'module.json', 'system.json', 'template.json'];
+  const statics = ['lang', 'fonts', 'assets', 'templates', 'styles', 'module.json', 'system.json', 'template.json'];
   try {
     for (const file of statics) {
       if (fs.existsSync(path.join('src', file))) {
@@ -161,7 +161,7 @@ function buildWatch() {
   gulp.watch('src/**/*.ts', { ignoreInitial: false }, buildTS);
   gulp.watch('src/**/*.less', { ignoreInitial: false }, buildLess);
   gulp.watch('src/**/*.scss', { ignoreInitial: false }, buildSASS);
-  gulp.watch(['src/fonts', 'src/lang', 'src/templates', 'src/*.json'], { ignoreInitial: false }, copyFiles);
+  gulp.watch(['src/fonts', 'src/lang', 'src/templates', 'src/styles', 'src/*.json'], { ignoreInitial: false }, copyFiles);
 }
 
 /********************/

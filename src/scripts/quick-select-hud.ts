@@ -4,11 +4,9 @@ export class QuickStatusSelectHud extends Application {
   i18n = (toTranslate) => game.i18n.localize(toTranslate);
 
   refresh_timeout = null;
-  tokens = null;
-  selectedToken = null;
-  selectedTokens = [];
-  rendering = false;
-  categoryHovered = '';
+  allTokens: Array<Token> = null;
+  selectedTokens: Array<Token> = [];
+  searchTerm: string = null;
   defaultLeftPos = 150;
   defaultTopPos = 80;
 
@@ -16,14 +14,8 @@ export class QuickStatusSelectHud extends Application {
     super();
   }
 
-  async init(user) {}
-
-  updateSettings() {
-    this.update();
-  }
-
-  setTokensReference(tokens) {
-    this.tokens = tokens;
+  setTokensReference(tokens: Array<Token>): void {
+    this.allTokens = tokens;
   }
 
   /** @override */
@@ -46,7 +38,7 @@ export class QuickStatusSelectHud extends Application {
     });
   }
 
-  getScale() {
+  getScale(): number {
     const scale = 1;
     if (scale < 0.8) {
       return 0.8;
@@ -57,38 +49,39 @@ export class QuickStatusSelectHud extends Application {
     return scale;
   }
 
-  /** @override */
-  getData(options = {}) {
+  public getData(options = {}): any {
     const data = super.getData();
     data.id = 'quick-status-select';
     data.scale = this.getScale();
-    data.statuses = CONFIG.statusEffects;
+    data.statuses = CONFIG.statusEffects
+      .map((s: any) => {
+        return { ...s, label: s.label.replace('EFFECT.Status', '') };
+      })
+      .filter((s) => {
+        if (this.searchTerm && this.searchTerm.trim()) {
+          return s.label.toLowerCase().includes(this.searchTerm.toLowerCase());
+        }
+        return true;
+      });
+    data.searchTerm = this.searchTerm;
     log('data: ', data);
     return data;
   }
 
-  /** @override */
   activateListeners(html) {
     log('activate listeners: ', html);
     const quickStatusSelectHud = '#quick-status-select';
     const repositionIcon = '#qss-reposition';
-    const action = '.qss-action';
+    const quickInput = '.qss-quick-input';
+    const quickStatusEntry = '.qss-status-entry';
 
-    const handleClick = (e) => {
-      let target = e.target;
-
-      if (target.tagName !== 'BUTTON') {
-        target = e.currentTarget.children[0];
-      }
-    };
-
-    html.find(action).on('click', (e) => {
-      handleClick(e);
+    const qi = html.find(quickInput);
+    qi.on('change', (e) => {
+      log('quick input change: ', e.target.value);
+      this.searchTerm = e.target.value.trim();
+      this.update();
     });
-
-    html.find(action).contextmenu((e) => {
-      handleClick(e);
-    });
+    qi.focus();
 
     html.find(repositionIcon).mousedown((ev) => {
       ev.preventDefault();
@@ -150,34 +143,42 @@ export class QuickStatusSelectHud extends Application {
         }
       }
     });
-
-    $(document).find('.qss-filterholder').parents('.qss-subcategory').css('cursor', 'pointer');
+    html.find(quickStatusEntry).mouseup((ev) => {
+      ev.preventDefault();
+      ev = ev || window.event;
+      log('clicked a status: ', ev.target);
+      this.toggleCondition(JSON.parse(ev.target.getAttribute('data-status')));
+    });
+  }
+  async toggleCondition(status: any) {
+    if (status) {
+      log('selected status: ', status);
+      if (status.id.includes('combat-utility-belt.') && game.cub) {
+        this.selectedTokens.forEach(async (t) => {
+          game.cub.hasCondition(status.label, t) ? await game.cub.removeCondition(status.label, t) : await game.cub.addCondition(status.label, t);
+        });
+      } else {
+        this.selectedTokens.forEach(async (t) => {
+          await t.toggleEffect(status);
+        });
+      }
+    }
   }
 
-  trySetPos() {
+  setQssPosition(): void {
+    log('setting position');
     let hudTitle = $(document).find('#qss-hudTitle');
     if (hudTitle.length > 0) hudTitle.css('top', -hudTitle[0].getBoundingClientRect().height);
 
-    let token = this.tokens && this.tokens.length && this.tokens[0];
+    let token = this.selectedTokens && this.selectedTokens.length && this.selectedTokens[0];
     if (token) {
-      this.setHoverPos(token);
+      this.setPositionBySelectedToken(token);
     } else {
       this.setUserPos();
     }
-    this.rendering = false;
-    this.rendering = false;
   }
 
-  //   applySettings() {
-  //     if (!settings.get('dropdown')) {
-  //       $(document).find('.qss-content').css({
-  //         bottom: '40px',
-  //         'flex-direction': 'column-reverse',
-  //       });
-  //     }
-  //   }
-
-  setUserPos() {
+  setUserPos(): void {
     log('attempting to update position...');
     if (!(game.user.data.flags['quick-status-select'] && game.user.data.flags['quick-status-select'].hudPos)) {
       return;
@@ -202,7 +203,7 @@ export class QuickStatusSelectHud extends Application {
     return false;
   }
 
-  setHoverPos(token) {
+  setPositionBySelectedToken(token: Token): void {
     let elmnt = $('#quick-status-select');
     if (elmnt) {
       elmnt.css('bottom', null);
@@ -213,53 +214,36 @@ export class QuickStatusSelectHud extends Application {
     }
   }
 
-  async resetHud() {
+  async resetHud(): Promise<void> {
     await this.resetFlags();
     this.resetPosition();
   }
 
-  resetPosition() {
+  resetPosition(): void {
     game.user.update({ flags: { 'quick-status-select': { hudPos: { top: 80, left: 150 } } } });
     this.update();
   }
 
-  async resetFlags() {
+  async resetFlags(): Promise<void> {
     this.update();
   }
 
-  update() {
+  update(): void {
+    log('update...');
     // Delay refresh because switching tokens could cause a controlToken(false) then controlToken(true) very fast
     if (this.refresh_timeout) clearTimeout(this.refresh_timeout);
-    this.refresh_timeout = setTimeout(this.updateHud.bind(this), 100);
+    this.refresh_timeout = setTimeout(this.updateHud.bind(this), 30);
   }
 
-  async updateHud() {
+  async updateHud(): Promise<void> {
     log('Updating HUD');
-    this.rendering = true;
-    this.render(true);
-  }
-
-  _getTargetToken(controlled) {
-    if (controlled.length > 1) return null;
-
-    if (controlled.length === 0 && canvas.tokens?.placeables && game.user.character) {
-      let character = game.user.character;
-      let token = canvas?.tokens?.placeables.find((t) => t.actor?._id === character?._id);
-      if (token) return token;
-
-      return null;
+    if (this.selectedTokens && this.selectedTokens.length) {
+      log('will render');
+      this.render();
     }
-
-    let ct = controlled[0];
-
-    if (!ct) return null;
-
-    if (this._userHasPermission(ct)) return ct;
-
-    return null;
   }
 
-  _userHasPermission(token: Token) {
+  _userHasPermission(token: Token): boolean {
     let actor = token.actor;
     let user = game.user;
     return game.user.isGM || actor?.hasPerm(user, 'OWNER');

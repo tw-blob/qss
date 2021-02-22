@@ -24,25 +24,29 @@ Hooks.once('canvasReady', async () => {
 
   let user = game.user;
 
-  if (!user) throw new Error('Token Action HUD | No user found.');
+  if (!user) {
+    throw new Error('Quick Status Select HUD | No user found.');
+  }
 
   if (!game.quickStatusSelect) {
     game.quickStatusSelect = new QuickStatusSelectHud();
-    await game.quickStatusSelect.init(user);
   }
 
   game.quickStatusSelect.setTokensReference(canvas.tokens);
 
   Hooks.on('controlToken', (token, controlled) => {
-    if (controlled) {
-      game.quickStatusSelect.token = token;
+    log('on control token: ', token, controlled);
+    if (controlled && hasPermission(token)) {
+      game.quickStatusSelect.selectedTokens.push(token);
+      game.quickStatusSelect.render(true);
+    } else {
+      game.quickStatusSelect.selectedTokens.findSplice((t) => t.id === token.id);
+      game.quickStatusSelect.close();
     }
-    game.quickStatusSelect.update();
   });
 
   Hooks.on('renderQuickStatusSelectHud', () => {
-    // game.quickStatusSelect.applySettings();
-    game.quickStatusSelect.trySetPos();
+    game.quickStatusSelect.setQssPosition();
   });
 
   // Hooks.on('updateToken', (scene, token, diff, options, idUser) => {
@@ -114,3 +118,9 @@ Hooks.once('canvasReady', async () => {
 
   game.quickStatusSelect.update();
 });
+
+export function hasPermission(token: Token): boolean {
+  let actor = token.actor;
+  let user = game.user;
+  return game.user.isGM || actor?.hasPerm(user, 'OWNER');
+}
