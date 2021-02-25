@@ -2,8 +2,9 @@ import { log } from "./log.js";
 export class QuickStatusSelectHud extends Application {
     constructor() {
         super();
-        this.i18n = (toTranslate) => game.i18n.localize(toTranslate);
-        this.refresh_timeout = null;
+        this.i18n = (toTranslate) => {
+            return game.i18n.localize(toTranslate);
+        };
         this.allTokens = null;
         this.selectedTokens = [];
         this.searchTerm = null;
@@ -13,7 +14,6 @@ export class QuickStatusSelectHud extends Application {
     setTokensReference(tokens) {
         this.allTokens = tokens;
     }
-    /** @override */
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
             template: '/modules/quick-status-select/templates/qss.hbs',
@@ -32,20 +32,9 @@ export class QuickStatusSelectHud extends Application {
             scrollY: [],
         });
     }
-    getScale() {
-        const scale = 1;
-        if (scale < 0.8) {
-            return 0.8;
-        }
-        if (scale > 2) {
-            return 2;
-        }
-        return scale;
-    }
     getData(options = {}) {
         const data = super.getData();
         data.id = 'quick-status-select';
-        data.scale = this.getScale();
         data.statuses = CONFIG.statusEffects
             .map((s) => {
             return Object.assign(Object.assign({}, s), { label: s.label.replace('EFFECT.Status', '') });
@@ -60,6 +49,17 @@ export class QuickStatusSelectHud extends Application {
         log('data: ', data);
         return data;
     }
+    moveCursorToEnd(el) {
+        if (typeof el.selectionStart == 'number') {
+            el.selectionStart = el.selectionEnd = el.value.length;
+        }
+        else if (typeof el.createTextRange != 'undefined') {
+            el.focus();
+            var range = el.createTextRange();
+            range.collapse(false);
+            range.select();
+        }
+    }
     activateListeners(html) {
         log('activate listeners: ', html);
         const quickStatusSelectHud = '#quick-status-select';
@@ -67,12 +67,21 @@ export class QuickStatusSelectHud extends Application {
         const quickInput = '.qss-quick-input';
         const quickStatusEntry = '.qss-status-entry';
         const qi = html.find(quickInput);
-        qi.on('change', (e) => {
+        qi.on('input', (e) => {
             log('quick input change: ', e.target.value);
             this.searchTerm = e.target.value.trim();
-            this.update();
+            this.updateHud();
         });
         qi.focus();
+        if (typeof qi[0].selectionStart == 'number') {
+            qi[0].selectionStart = qi[0].selectionEnd = qi[0].value.length;
+        }
+        else if (typeof qi[0].createTextRange != 'undefined') {
+            qi.focus();
+            var range = qi[0].createTextRange();
+            range.collapse(false);
+            range.select();
+        }
         html.find(repositionIcon).mousedown((ev) => {
             ev.preventDefault();
             ev = ev || window.event;
@@ -80,7 +89,10 @@ export class QuickStatusSelectHud extends Application {
             let marginLeft = parseInt(hud.css('marginLeft').replace('px', ''));
             let marginTop = parseInt(hud.css('marginTop').replace('px', ''));
             dragElement(document.getElementById('quick-status-select'));
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            let pos1 = 0;
+            let pos2 = 0;
+            let pos3 = 0;
+            let pos4 = 0;
             function dragElement(elmnt) {
                 elmnt.onmousedown = dragMouseDown;
                 function dragMouseDown(e) {
@@ -159,7 +171,7 @@ export class QuickStatusSelectHud extends Application {
         }
     }
     setUserPos() {
-        log('attempting to update position...');
+        log('user is repositioning');
         if (!(game.user.data.flags['quick-status-select'] && game.user.data.flags['quick-status-select'].hudPos)) {
             return;
         }
@@ -182,41 +194,24 @@ export class QuickStatusSelectHud extends Application {
         return false;
     }
     setPositionBySelectedToken(token) {
+        log('setting position based on selected token');
         let elmnt = $('#quick-status-select');
         if (elmnt) {
             elmnt.css('bottom', null);
-            elmnt.css('left', token.worldTransform.tx + (token.data.width * canvas.dimensions.size + 55) * canvas.scene._viewPosition.scale + 'px');
+            elmnt.css('left', token.worldTransform.tx + (token.data.width * canvas.dimensions.size + 100) * canvas.scene._viewPosition.scale + 'px');
             elmnt.css('top', token.worldTransform.ty + 0 + 'px');
             elmnt.css('position', 'fixed');
             elmnt.css('zIndex', 100);
         }
     }
-    async resetHud() {
-        await this.resetFlags();
-        this.resetPosition();
-    }
-    resetPosition() {
-        game.user.update({ flags: { 'quick-status-select': { hudPos: { top: 80, left: 150 } } } });
-        this.update();
-    }
-    async resetFlags() {
-        this.update();
-    }
-    update() {
-        log('update...');
-        // Delay refresh because switching tokens could cause a controlToken(false) then controlToken(true) very fast
-        if (this.refresh_timeout)
-            clearTimeout(this.refresh_timeout);
-        this.refresh_timeout = setTimeout(this.updateHud.bind(this), 30);
-    }
-    async updateHud() {
+    updateHud() {
         log('Updating HUD');
         if (this.selectedTokens && this.selectedTokens.length) {
             log('will render');
             this.render();
         }
     }
-    _userHasPermission(token) {
+    hasPermission(token) {
         let actor = token.actor;
         let user = game.user;
         return game.user.isGM || (actor === null || actor === void 0 ? void 0 : actor.hasPerm(user, 'OWNER'));
