@@ -1,7 +1,7 @@
 {
   "name": "quick-status-select",
-  "title": "Quick Status Select DND 5e",
-  "description": "a quick status select module",
+  "title": "Quick Status Select",
+  "description": "a quick status / effect / condition select module",
   "version": "1.0.1",
   "author": "exodu",
   "esmodules": ["./scripts/qss.js"],
