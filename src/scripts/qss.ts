@@ -1,5 +1,4 @@
 import { preloadTemplates } from '../module/preloadTemplates.js';
-import { registerSettings } from '../module/settings.js';
 import { log } from './log.js';
 import { QuickStatusSelectHud } from './quick-select-hud.js';
 
@@ -11,7 +10,6 @@ declare global {
 
 Hooks.once('init', async function () {
   log('Initializing quick-status-select');
-  registerSettings();
   await preloadTemplates();
 });
 

@@ -1,6 +1,6 @@
 # Quick Status Select
 
-A foundry VTT module for quickly filter, searching, selecting, and applying status effects to a token or tokens.
+A Foundry VTT module that helps quickly select effects for a token or tokens by replacing the built-in status effect selector with an auto-complete-esque search box and filtered list.
 
 created with help from:
 
