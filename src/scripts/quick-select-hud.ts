@@ -76,6 +76,7 @@ export class QuickStatusSelectHud extends Application {
       log('quick input change: ', e.target.value);
       this.searchTerm = e.target.value.trim();
       this.updateHud();
+      this.highlightDefaultStatusButtons();
     });
 
     qi.focus();
@@ -157,6 +158,14 @@ export class QuickStatusSelectHud extends Application {
     });
   }
 
+  highlightDefaultStatusButtons(): void {
+    const defaultStatusEffects = $('.status-effects');
+    const allButtons = defaultStatusEffects.children();
+    allButtons.css('opacity', 0.5);
+    const searchTermTransformed = this.searchTerm.toLowerCase().capitalize();
+    const buttonsToHighlight = $(`[title*='${searchTermTransformed}']`);
+    buttonsToHighlight.css('opacity', 1.0);
+  }
   async toggleCondition(status: any) {
     if (status) {
       log('selected status: ', status);
@@ -212,10 +221,14 @@ export class QuickStatusSelectHud extends Application {
 
   setPositionBySelectedToken(token: Token): void {
     log('setting position based on selected token');
-    let elmnt = $('#quick-status-select');
+    const defaultStatusEffects = $('.status-effects');
+    const defaultStatusEffectsWidth = defaultStatusEffects.width();
+    log('defaultStatusEffects: ', defaultStatusEffects[0], defaultStatusEffectsWidth);
+    log('token.worldTransform.tx: ', token.worldTransform.tx, token.data.width);
+    const elmnt = $('#quick-status-select');
     if (elmnt) {
       elmnt.css('bottom', null);
-      elmnt.css('left', token.worldTransform.tx + (token.data.width * canvas.dimensions.size + 100) * canvas.scene._viewPosition.scale + 'px');
+      elmnt.css('left', token.worldTransform.tx + defaultStatusEffectsWidth + (token.data.width * canvas.dimensions.size + 50) * canvas.scene._viewPosition.scale + 'px');
       elmnt.css('top', token.worldTransform.ty + 0 + 'px');
       elmnt.css('position', 'fixed');
       elmnt.css('zIndex', 100);

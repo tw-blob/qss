@@ -31,6 +31,7 @@ Hooks.once('canvasReady', async () => {
       game.quickStatusSelect.selectedTokens.push(token);
     } else {
       game.quickStatusSelect.selectedTokens.findSplice((t) => t.id === token.id);
+      game.quickStatusSelect.searchTerm = '';
       game.quickStatusSelect.close();
     }
   });
@@ -40,8 +41,6 @@ Hooks.once('canvasReady', async () => {
   });
 
   Hooks.on('renderTokenHUD', (app, html, token) => {
-    const defaultStatusEffects = html.find('.status-effects');
-    defaultStatusEffects.hide();
     const effectsButton = html.find('.control-icon.effects');
     effectsButton.mouseup((ev) => {
       ev.preventDefault();
