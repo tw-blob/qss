@@ -3,12 +3,14 @@
     <div id="qss-reposition"><i class="fas fa-arrows-alt"></i></div>
     <div class="qss-content">
         <input class="qss-quick-input" type="search" value="{{this.searchTerm}}"></input>
+        {{#if this.statuses.length}}
         <div class="qss-list-container">
             <ul class="qss-ul">
                 {{#each this.statuses}}
-                <li class="qss-status-entry" data-status="{{json this}}">{{this.label}} <img src="{{this.icon}}" class="qss-status-icon" /> </li>
+                <li class="qss-status-entry" data-status="{{json this}}">{{localize this.label}} <img src="{{this.icon}}" class="qss-status-icon" /> </li>
                 {{/each}}
             </ul>
         </div>
+        {{/if}}
     </div>
 </div>

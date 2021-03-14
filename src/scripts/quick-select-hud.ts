@@ -1,10 +1,6 @@
 import { log } from './log';
 
 export class QuickStatusSelectHud extends Application {
-  i18n = (toTranslate: string) => {
-    return game.i18n.localize(toTranslate);
-  };
-
   allTokens: Array<Token> = null;
   selectedTokens: Array<Token> = [];
   searchTerm: string = null;
@@ -37,23 +33,35 @@ export class QuickStatusSelectHud extends Application {
     });
   }
 
+  private localize(toTranslate: string): string {
+    return game.i18n.localize(toTranslate);
+  }
+
+  private isPF2E(): boolean {
+    return game.system.id === 'pf2e';
+  }
   public getData(options = {}): any {
     const data = super.getData();
     data.id = 'quick-status-select';
-    data.statuses = CONFIG.statusEffects
-      .map((s: any) => {
-        return { ...s, label: s.label.replace('EFFECT.Status', '') };
-      })
-      .filter((s) => {
+    if (this.isPF2E()) {
+      log('game system identified as PF2E, engage highlight only mode.');
+      data.statuses = [];
+    } else {
+      const statuses = CONFIG.statusEffects;
+      log('Found the following status effects: ', statuses);
+      data.statuses = statuses.filter((s: any) => {
         if (this.searchTerm && this.searchTerm.trim()) {
-          return s.label.toLowerCase().includes(this.searchTerm.toLowerCase());
+          return this.localize(s.label).toLowerCase().includes(this.searchTerm.toLowerCase());
         }
         return true;
       });
+    }
+
     data.searchTerm = this.searchTerm;
     log('data: ', data);
     return data;
   }
+
   moveCursorToEnd(el) {
     if (typeof el.selectionStart == 'number') {
       el.selectionStart = el.selectionEnd = el.value.length;
@@ -64,6 +72,7 @@ export class QuickStatusSelectHud extends Application {
       range.select();
     }
   }
+
   activateListeners(html) {
     log('activate listeners: ', html);
     const quickStatusSelectHud = '#quick-status-select';
@@ -160,23 +169,39 @@ export class QuickStatusSelectHud extends Application {
 
   highlightDefaultStatusButtons(): void {
     const defaultStatusEffects = $('.status-effects');
-    const allButtons = defaultStatusEffects.children();
-    allButtons.css('opacity', 0.5);
-    const searchTermTransformed = this.searchTerm.toLowerCase().capitalize();
-    const buttonsToHighlight = $(`[title*='${searchTermTransformed}']`);
-    buttonsToHighlight.css('opacity', 1.0);
+
+    if (this.isPF2E()) {
+      const allButtons = $('.effect-control, .pf2e-effect-control');
+      log('all buttons: ', allButtons);
+      allButtons.css('opacity', 0.5);
+      const searchTermTransformed = this.searchTerm.toLowerCase().capitalize();
+      const buttonsToHighlight = $(`[data-condition*='${searchTermTransformed}']`);
+      log('buttons to highlight: ', buttonsToHighlight);
+      buttonsToHighlight.css('opacity', 1.0);
+    } else {
+      const allButtons = defaultStatusEffects.children();
+      log('all buttons: ', allButtons);
+      allButtons.css('opacity', 0.5);
+      const searchTermTransformed = this.searchTerm.toLowerCase().capitalize();
+      const buttonsToHighlight = $(`[title*='${searchTermTransformed}']`);
+      log('buttons to highlight: ', buttonsToHighlight);
+      buttonsToHighlight.css('opacity', 1.0);
+    }
   }
   async toggleCondition(status: any) {
     if (status) {
       log('selected status: ', status);
-      if (status.id.includes('combat-utility-belt.') && game.cub) {
-        this.selectedTokens.forEach(async (t) => {
-          game.cub.hasCondition(status.label, t) ? await game.cub.removeCondition(status.label, t) : await game.cub.addCondition(status.label, t);
-        });
+      if (this.isPF2E()) {
       } else {
-        this.selectedTokens.forEach(async (t) => {
-          await t.toggleEffect(status);
-        });
+        if (status.id.includes('combat-utility-belt.') && game.cub) {
+          this.selectedTokens.forEach(async (t) => {
+            game.cub.hasCondition(status.label, t) ? await game.cub.removeCondition(status.label, t) : await game.cub.addCondition(status.label, t);
+          });
+        } else {
+          this.selectedTokens.forEach(async (t) => {
+            await t.toggleEffect(status);
+          });
+        }
       }
     }
   }
@@ -223,15 +248,24 @@ export class QuickStatusSelectHud extends Application {
     log('setting position based on selected token');
     const defaultStatusEffects = $('.status-effects');
     const defaultStatusEffectsWidth = defaultStatusEffects.width();
-    log('defaultStatusEffects: ', defaultStatusEffects[0], defaultStatusEffectsWidth);
-    log('token.worldTransform.tx: ', token.worldTransform.tx, token.data.width);
+    log('defaultStatusEffects position details: ', defaultStatusEffects[0], defaultStatusEffectsWidth, token.worldTransform);
     const elmnt = $('#quick-status-select');
     if (elmnt) {
-      elmnt.css('bottom', null);
-      elmnt.css('left', token.worldTransform.tx + defaultStatusEffectsWidth + (token.data.width * canvas.dimensions.size + 50) * canvas.scene._viewPosition.scale + 'px');
-      elmnt.css('top', token.worldTransform.ty + 0 + 'px');
-      elmnt.css('position', 'fixed');
-      elmnt.css('zIndex', 100);
+      if (this.isPF2E()) {
+        // put it on the top of the default status selection grid
+        elmnt.css('bottom', null);
+        elmnt.css('left', token.worldTransform.tx + (token.data.width * canvas.dimensions.size + 65) * canvas.scene._viewPosition.scale + 'px');
+        elmnt.css('top', token.worldTransform.ty - 35 + 'px');
+        elmnt.css('position', 'fixed');
+        elmnt.css('zIndex', 100);
+      } else {
+        // put it to the right of the default status selectin grid
+        elmnt.css('bottom', null);
+        elmnt.css('left', token.worldTransform.tx + defaultStatusEffectsWidth + (token.data.width * canvas.dimensions.size + 50) * canvas.scene._viewPosition.scale + 'px');
+        elmnt.css('top', token.worldTransform.ty + 0 + 'px');
+        elmnt.css('position', 'fixed');
+        elmnt.css('zIndex', 100);
+      }
     }
   }
 
