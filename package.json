@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"name": "foundry-quick-status-select-module",
-	"version": "1.0.0",
+	"version": "1.2.0",
 	"description": "A Foundry VTT module that helps quickly select effects for a token or tokens by replacing the built-in status effect selector with an auto-complete-esque search box and filtered list.",
 	"scripts": {
 		"package": "gulp package",
@@ -9,7 +9,7 @@
 		"build:watch": "gulp watch",
 		"clean": "gulp clean && gulp link --clean",
 		"update": "npm install --save-dev gitlab:foundry-projects/foundry-pc/foundry-pc-types",
-		"publish": "gulp publish -u 1.0.0"
+		"publish": "gulp publish -u 1.2.0"
 	},
 	"author": "",
 	"license": "",
