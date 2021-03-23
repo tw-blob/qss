@@ -1,58 +1,57 @@
-import { preloadTemplates } from '../module/preloadTemplates.js';
-import { log } from './log.js';
-import { QuickStatusSelectHud } from './quick-select-hud.js';
-
 declare global {
   interface Game {
-    quickStatusSelect: QuickStatusSelectHud;
+    qssSearchTerm: string;
   }
 }
 
-Hooks.once('init', async function () {
-  log('Initializing quick-status-select');
-  await preloadTemplates();
-});
-
 Hooks.once('canvasReady', async () => {
-  log('got canvas ready hook!', game, canvas);
+  debug('got canvas ready hook!', game, canvas);
   let user = game.user;
   if (!user) {
-    throw new Error('Quick Status Select HUD | No user found.');
+    throw new Error('Quick Status Select | No user found.');
   }
 
-  if (!game.quickStatusSelect) {
-    game.quickStatusSelect = new QuickStatusSelectHud();
-  }
-  game.quickStatusSelect.setTokensReference(canvas.tokens);
-
-  Hooks.on('controlToken', (token, controlled) => {
-    log('on control token: ', token, controlled);
-    if (controlled && hasPermission(token)) {
-      game.quickStatusSelect.selectedTokens.push(token);
-    } else {
-      game.quickStatusSelect.selectedTokens.findSplice((t) => t.id === token.id);
-      game.quickStatusSelect.searchTerm = '';
-      game.quickStatusSelect.close();
-    }
-  });
-
-  Hooks.on('renderQuickStatusSelectHud', () => {
-    game.quickStatusSelect.setQssPosition();
-  });
-
-  Hooks.on('renderTokenHUD', (app, html, token) => {
-    const effectsButton = html.find('.control-icon.effects');
-    effectsButton.mouseup((ev) => {
-      ev.preventDefault();
-      ev = ev || window.event;
-      game.quickStatusSelect.render(true);
+  Hooks.on('renderTokenHUD', async (app, html, token) => {
+    const statusEffects = $(document).find('.status-effects');
+    statusEffects.prepend('<input class="qss-quick-input" id="qss-quick-input" type="search" placeholder="filter conditions..." ></input>');
+    const qssQuickInput = $(document).find('.qss-quick-input');
+    qssQuickInput.on('input', (e) => {
+      game.qssSearchTerm = qssQuickInput.val().toString();
+      filterStatusButtons();
+    });
+    // bind to the click on the img tag because otherwise every click in the grid is handled.
+    const effectsButton = html.find('.control-icon.effects img');
+    effectsButton.mouseup((e) => {
+      // wait 1 frame after the effects button is clicked because otherwise our input isn't on the dom yet.
+      setTimeout(() => {
+        qssQuickInput.focus();
+      }, 0);
     });
   });
-  game.quickStatusSelect.updateHud();
 });
 
-function hasPermission(token: Token): boolean {
-  let actor = token.actor;
-  let user = game.user;
-  return game.user.isGM || actor?.hasPerm(user, 'OWNER');
+function filterStatusButtons(): void {
+  const searchTermTransformed = game.qssSearchTerm.trim().toLowerCase().capitalize();
+  let allButtons: JQuery<HTMLElement>;
+  let buttonsToFilter: JQuery<HTMLElement>;
+
+  if (isPF2E()) {
+    allButtons = $('.effect-control, .pf2e-effect-control');
+    buttonsToFilter = $(`[data-condition*='${searchTermTransformed}' i]`);
+  } else {
+    allButtons = $('.effect-container, .effect-control');
+    buttonsToFilter = $(`[title*='${searchTermTransformed}' i]`);
+  }
+  if (!game.qssSearchTerm) {
+    allButtons.css('display', 'block');
+  } else {
+    allButtons.css('display', 'none');
+    buttonsToFilter.css('display', 'block');
+  }
+}
+function isPF2E(): boolean {
+  return game.system.id === 'pf2e';
+}
+export function debug(msg: string, ...args: any[]): void {
+  console.log(`quick-status-select | ${msg}`, ...args);
 }
