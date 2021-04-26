@@ -37,7 +37,7 @@ function filterStatusButtons(): void {
 
   if (isPF2E()) {
     allButtons = $('.effect-control, .pf2e-effect-control');
-    buttonsToFilter = $(`[data-condition*='${searchTermTransformed}' i]`);
+    buttonsToFilter = $(`.control-icon [title*='${searchTermTransformed}']`);
   } else {
     allButtons = $('.effect-container, .effect-control');
     buttonsToFilter = $(`[title*='${searchTermTransformed}' i]`);
