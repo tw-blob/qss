@@ -34,13 +34,11 @@ function filterStatusButtons(): void {
   const searchTermTransformed = game.qssSearchTerm.trim().toLowerCase().capitalize();
   let allButtons: JQuery<HTMLElement>;
   let buttonsToFilter: JQuery<HTMLElement>;
-
+  buttonsToFilter = $(`.control-icon [title*='${searchTermTransformed}']`);
   if (isPF2E()) {
     allButtons = $('.effect-control, .pf2e-effect-control');
-    buttonsToFilter = $(`.control-icon [title*='${searchTermTransformed}']`);
   } else {
     allButtons = $('.effect-container, .effect-control');
-    buttonsToFilter = $(`[title*='${searchTermTransformed}' i]`);
   }
   if (!game.qssSearchTerm) {
     allButtons.css('display', 'block');
