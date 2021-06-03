@@ -12,7 +12,6 @@ Hooks.once('canvasReady', async () => {
   }
 
   Hooks.on('renderTokenHUD', async (app, html, token) => {
-    debug('render token hud hook');
     const statusEffects = $(document).find('.status-effects');
     statusEffects.prepend('<input class="qss-quick-input" id="qss-quick-input" type="search" placeholder="filter conditions..." ></input>');
     const qssQuickInput = $(document).find('.qss-quick-input');
@@ -22,11 +21,9 @@ Hooks.once('canvasReady', async () => {
     });
     // bind to the click on the img tag because otherwise every click in the grid is handled.
     const effectsButton = html.find('.control-icon[data-action="effects"]');
-    debug('effectsButton: ', effectsButton);
     effectsButton.mouseup((e) => {
       // wait 1 frame after the effects button is clicked because otherwise our input isn't on the dom yet.
       setTimeout(() => {
-        debug('trying to focus the input', qssQuickInput);
         qssQuickInput.focus();
       }, 0);
     });
