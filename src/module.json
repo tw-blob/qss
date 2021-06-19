@@ -7,7 +7,7 @@
   "esmodules": ["./scripts/qss.js"],
   "styles": ["./styles/qss.css"],
   "minimumCoreVersion": "0.5.0",
-  "compatibleCoreVersion": "0.8.6",
+  "compatibleCoreVersion": "0.8.7",
   "license": "LICENSE",
   "url": "https://github.com/jeremiahverba/qss",
   "manifest": "https://raw.githubusercontent.com/jeremiahverba/qss/main/src/module.json",
