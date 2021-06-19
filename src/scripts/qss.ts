@@ -5,7 +5,7 @@ declare global {
 }
 
 Hooks.once('canvasReady', async () => {
-  debug('LOCAL got canvas ready hook!', game, canvas);
+  debug('got canvas ready hook!', game, canvas);
   let user = game.user;
   if (!user) {
     throw new Error('Quick Status Select | No user found.');
@@ -54,11 +54,11 @@ function findEffectsButton(): JQuery<HTMLElement> {
   return $('[data-action="effects"]');
 }
 function findAllStatusEffectButtons(): JQuery<HTMLElement> {
-  return $(`div.effect-container, div.pf2e-effect-control`);
+  return $(`div.effect-container, img.effect-control, img.pf2e-effect-control`);
 }
 
 function findStatusEffectButtonsContainingSearchTerm(allButtons: JQuery<HTMLElement>, searchTerm: string): JQuery<HTMLElement> {
-  return allButtons.filter(`[title*='${searchTerm}']`);
+  return allButtons.filter(`[title*='${searchTerm}'], [data-effect*='${searchTerm}']`);
 }
 
 function filterStatusButtons(): void {
