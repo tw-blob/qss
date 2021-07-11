@@ -13,8 +13,14 @@ Hooks.once('canvasReady', async () => {
 
   Hooks.on('renderTokenHUD', async (app, html, token) => {
     const statusEffects = $(document).find('.status-effects');
-    statusEffects.prepend('<input class="qss-quick-input" id="qss-quick-input" type="search" placeholder="filter conditions..." ></input>');
-    const qssQuickInput = $(document).find('.qss-quick-input');
+    let inputString = '';
+    if (isPF2E()) {
+      inputString = '<input class="qss-quick-input-pf2e" id="qss-quick-input" type="text" placeholder="filter conditions..." ></input>';
+    } else {
+      inputString = '<input class="qss-quick-input" id="qss-quick-input" type="text" placeholder="filter conditions..." ></input>';
+    }
+    statusEffects.prepend(inputString);
+    const qssQuickInput = $(document).find('.qss-quick-input, .qss-quick-input-pf2e');
     qssQuickInput.on('keypress', (e) => {
       debug('got keypress: ', e.key, game.qssSearchTerm);
       if (e.key === 'Enter' && !!game.qssSearchTerm) {
@@ -29,7 +35,11 @@ Hooks.once('canvasReady', async () => {
         effectsButton.trigger('click');
       }
     });
+    qssQuickInput.on('search', (e) => {
+      debug('search event', e);
+    });
     qssQuickInput.on('click', (e) => {
+      debug('click: ', e);
       e.preventDefault();
       return false;
     });
@@ -54,11 +64,25 @@ function findEffectsButton(): JQuery<HTMLElement> {
   return $('[data-action="effects"]');
 }
 function findAllStatusEffectButtons(): JQuery<HTMLElement> {
-  return $(`div.effect-container, img.effect-control, img.pf2e-effect-control`);
+  if (isPF2E()) {
+    return $(`div.effect-container, div.pf2e-effect-img-container`);
+  }
+  return $(`div.effect-container, img.effect-control`);
 }
 
 function findStatusEffectButtonsContainingSearchTerm(allButtons: JQuery<HTMLElement>, searchTerm: string): JQuery<HTMLElement> {
-  return allButtons.filter(`[title*='${searchTerm}'], [data-effect*='${searchTerm}']`);
+  debug('search term: ', searchTerm);
+  if (isPF2E()) {
+    const loweredSearchTerm = searchTerm.toLowerCase();
+    debug('pf2e detected.');
+    const all = allButtons;
+    const children = all.children();
+    const found = children.filter(`[data-effect*='${loweredSearchTerm}']`);
+    const parents = found.parent();
+    debug('found: ', all, children, found, parents);
+    return parents;
+  }
+  return allButtons.filter(`[title*='${searchTerm}']`);
 }
 
 function filterStatusButtons(): void {

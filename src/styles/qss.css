@@ -1,11 +1,10 @@
 .qss-quick-input {
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  border-radius: 0.5rem;
-  width: 25rem;
-  padding: 0.25rem;
-  font-size: 1.5rem;
   position: absolute;
   top: -2.5rem;
+  left: 0rem;
+}
+.qss-quick-input-pf2e {
+  position: absolute;
+  bottom: -2.5rem;
   left: 0rem;
 }
