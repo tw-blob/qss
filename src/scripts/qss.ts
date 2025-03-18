@@ -82,7 +82,7 @@ function findStatusEffectButtonsContainingSearchTerm(allButtons: JQuery<HTMLElem
     debug('found: ', all, children, found, parents);
     return parents;
   }
-  return allButtons.filter(`[title*='${searchTerm}']`);
+  return allButtons.filter(`[data-tooltip*='${searchTerm}']`);
 }
 
 function filterStatusButtons(): void {
