@@ -2,7 +2,7 @@
   "name": "quick-status-select",
   "title": "Quick Status Select",
   "description": "a quick status / effect / condition select module",
-  "version": "1.7.1",
+  "version": "1.9.0",
   "author": "exodu",
   "esmodules": ["./scripts/qss.js"],
   "styles": ["./styles/qss.css"],
