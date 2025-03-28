@@ -66,8 +66,11 @@ function findEffectsButton(): JQuery<HTMLElement> {
 function findAllStatusEffectButtons(): JQuery<HTMLElement> {
   if (isPF2E()) {
     return $(`div.effect-container, div.pf2e-effect-img-container`);
-  }
-  return $(`div.effect-container, img.effect-control`);
+}
+if (MonksActive()) {
+    return $(`div.effect-container`);
+}
+return $(`div.effect-container, img.effect-control`);
 }
 
 function findStatusEffectButtonsContainingSearchTerm(allButtons: JQuery<HTMLElement>, searchTerm: string): JQuery<HTMLElement> {
@@ -82,6 +85,17 @@ function findStatusEffectButtonsContainingSearchTerm(allButtons: JQuery<HTMLElem
     debug('found: ', all, children, found, parents);
     return parents;
   }
+  if (MonksActive()) {
+    /* monks-little-details is active and needs special handling */
+		debug('monks-little-details detected.');
+		const all = allButtons;
+		const children = all.children();
+		const found = children.filter(':contains(' + searchTerm  + ')');
+		const parents = found.parent();	
+		debug('found: ', all, children, found, parents);;
+		return parents;
+	}
+else {
   return allButtons.filter(`[data-tooltip*='${searchTerm}']`);
 }
 
@@ -101,6 +115,11 @@ function filterStatusButtons(): void {
 function isPF2E(): boolean {
   return game.system.id === 'pf2e';
 }
+
+function MonksActive() {
+	return game.modules.get('monks-little-details')?.active
+}
+
 export function debug(msg: string, ...args: any[]): void {
   console.log(`quick-status-select | ${msg}`, ...args);
 }
