@@ -1,15 +1,20 @@
 {
-  "name": "quick-status-select",
   "title": "Quick Status Select",
   "description": "a quick status / effect / condition select module",
-  "version": "1.9.0",
-  "author": "exodu",
-  "esmodules": ["./scripts/qss.js"],
-  "styles": ["./styles/qss.css"],
-  "minimumCoreVersion": "0.5.0",
-  "compatibleCoreVersion": "0.12.331",
+  "version": "1.10.0",
+  "esmodules": [
+    "scripts/qss.js"
+  ],
+  "styles": [
+    "styles/qss.css"
+  ],
   "license": "LICENSE",
-  "url": "https://github.com/jeremiahverba/qss",
-  "manifest": "https://raw.githubusercontent.com/jeremiahverba/qss/main/src/module.json",
-  "download": "https://github.com/jeremiahverba/qss/raw/main/package/quick-status-select-v1.8.0.zip"
+  "url": "https://github.com/tw-blob/qss",
+  "manifest": "https://github.com/tw-blob/qss/releases/latest/download/module.json",
+  "download": "https://github.com/tw-blob/qss/releases/download/1.10.0/module.zip",
+  "id": "quick-status-select",
+  "compatibility": {
+    "minimum": "0.12.0",
+    "verified": "0.12.331"
+  }
 }
