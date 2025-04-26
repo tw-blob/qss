@@ -1,5 +1,5 @@
 # Quick Status Select
-This is a fork of the original project. I've rebuilt it to provide support for any combination of the following:
+This is a fork of the original project. Credit goes to the original author Jeremiah Verba. I've rebuilt it to provide support for any combination of the following:
 - Foundry v12
 - Lancer RPG
 - Pathfinder 2e
