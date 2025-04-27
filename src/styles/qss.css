@@ -2,6 +2,7 @@
   position: absolute;
   top: -2.5rem;
   left: 0rem;
+  min-width: 200px;
 }
 .qss-quick-input-pf2e {
   position: absolute;
