@@ -21,6 +21,7 @@
   "styles": [
     "styles/qss.css"
   ],
+  "languages": [{ "lang": "en", "name": "English", "path": "lang/en.json" }],
   "license": "LICENSE",
   "url": "https://github.com/tw-blob/qss",
   "manifest": "https://github.com/tw-blob/qss/releases/latest/download/module.json",
