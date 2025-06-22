@@ -1,31 +1,17 @@
 {
 	"private": true,
 	"name": "foundry-quick-status-select-module",
-	"version": "1.8.0",
+	"version": "3.1.8",
 	"description": "A Foundry VTT module that helps quickly select effects for a token or tokens by replacing the built-in status effect selector with an auto-complete-esque search box and filtered list.",
 	"scripts": {
-		"package": "gulp package",
-		"build": "gulp build && gulp link",
-		"build:watch": "gulp watch",
-		"clean": "gulp clean && gulp link --clean",
-		"update": "npm install --save-dev gitlab:foundry-projects/foundry-pc/foundry-pc-types",
-		"publish": "gulp publish -u 1.8.0"
+        "generate:symlinks": "node scripts/symlink.mjs",
+		"postinstall": "node scripts/symlink.mjs",
+        "run:foundry": "npx --config ./fvttrc.yml",
+		"version": "node scripts/version.mjs"
 	},
 	"author": "",
 	"license": "",
 	"devDependencies": {
-		"archiver": "^5.2.0",
-		"chalk": "^4.1.0",
-		"foundry-pc-types": "gitlab:foundry-projects/foundry-pc/foundry-pc-types",
-		"fs-extra": "^9.1.0",
-		"gulp": "^4.0.2",
-		"gulp-git": "^2.10.1",
-		"gulp-less": "^4.0.1",
-		"gulp-sass": "^4.1.0",
-		"gulp-typescript": "^6.0.0-alpha.1",
-		"json-stringify-pretty-compact": "^2.0.0",
-		"sass": "^1.32.6",
-		"typescript": "^4.1.4",
-		"yargs": "^16.2.0"
+		"@foundryvtt/foundryvtt-cli": "^1.1.0"
 	}
 }

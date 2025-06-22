@@ -1,11 +1,16 @@
 {
-	"compilerOptions": {
-		"target": "ES2017",
-		"lib": [
-			"DOM",
-			"ES6",
-			"ES2017"
-		],
-		"types": ["foundry-pc-types"]
-	}
+  "compilerOptions": {
+    "module": "es2023",
+    "target": "ES2022",
+    "outDir": "dist",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "paths": {
+      "@client/*": ["./foundry/client/*"],
+      "@common/*": ["./foundry/common/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "scripts"],
+  "include": ["src", "foundry/client/client.mjs", "foundry/client/global.d.mts"]
 }

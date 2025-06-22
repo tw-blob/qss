@@ -1,0 +1,9 @@
+{
+  "quick-status-select": {
+    "TokenHud": {
+      "quick-input": {
+        "placeholder": "Filter"
+      }
+    }
+  }
+}

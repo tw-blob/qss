@@ -1,0 +1,40 @@
+name: Release Creation
+
+on: 
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    # Remove the 'v' from the tag for versioning
+    - id: get_version
+      run: |
+        echo "FOUNDRY_MANIFEST=https://github.com/${{github.repository}}/releases/latest/download/module.json" >> $GITHUB_ENV
+        echo "FOUNDRY_DOWNLOAD=https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip" >> $GITHUB_ENV
+
+    - id: manifest_substitution
+      run: |
+        jq --arg manifest_url ${FOUNDRY_MANIFEST} --arg archive ${FOUNDRY_DOWNLOAD} '.manifest=$manifest_url |.download=$archive' < src/module.json > ./module.json.new
+        mv ./module.json.new src/module.json
+
+    # create a zip file with all files required by the module to add to the release
+    - run: |
+        cd src
+        zip -r ./module.zip *
+    # Create a release for this specific version
+    - name: Update Release with Files
+      id: create_version_release
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true # set this to false if you want to prevent updating existing releases
+        name: ${{ github.event.release.name }}
+        draft: false
+        prerelease: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: './src/module.json, ./src/module.zip'
+        tag: ${{ github.event.release.tag_name }}
+        body: ${{ github.event.release.body }}
