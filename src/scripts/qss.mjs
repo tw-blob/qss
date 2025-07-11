@@ -1,6 +1,19 @@
 Hooks.on('renderTokenHUD', /** @param {HTMLFormElement} html */(_app, html) => {
+  // Detect Monk's Little Details
+  const monksActive = game.modules.get("monks-little-details")?.active;
+
   /** @type {HTMLDivElement} */
-  const statusEffects = html.querySelector(".col.right .palette.status-effects");
+  let statusEffects;
+  if (monksActive) {
+    statusEffects = html.querySelector(".monks-token-effects");
+  }
+  if (!statusEffects) {
+    statusEffects = html.querySelector(".col.right .palette.status-effects");
+  }
+  if (!statusEffects) {
+    debug('No status effects container found.');
+    return;
+  }
 
   const qssQuickInput = document.createElement('input')
   qssQuickInput.type = "text";
@@ -10,24 +23,48 @@ Hooks.on('renderTokenHUD', /** @param {HTMLFormElement} html */(_app, html) => {
 
   qssQuickInput.addEventListener('input', () => {
     const term = qssQuickInput.value.trim().toLowerCase();
-    /** @type {NodeListOf<HTMLElement>} */
-    const effects = statusEffects.querySelectorAll('.effect-control');
-    for (const e of effects) {
-      const id = e.dataset.statusId?.trim().toLowerCase();
-      const label = (e.dataset.tooltipText || game.i18n.localize(e.dataset.tooltip))?.trim().toLowerCase();
-      e.hidden = !(id.match(term) || label.match(term))
+    if (monksActive) {
+      // Monk's Litte Details: filter .effect-container
+      /** @type {NodeListOf<HTMLElement>} */
+      const containers = statusEffects.querySelectorAll('.effect-container');
+      for (const container of containers) {
+        const icon = container.querySelector('.effect-control');
+        const id = icon?.dataset.statusId?.trim().toLowerCase();
+        const label = (icon?.dataset.tooltipText || game.i18n.localize(icon?.dataset.tooltip))?.trim().toLowerCase();
+        container.hidden = !(id?.match(term) || label?.match(term));
+      }
+    } else {
+      /** @type {NodeListOf<HTMLElement>} */
+      const effects = statusEffects.querySelectorAll('.effect-control');
+      for (const e of effects) {
+        const id = e.dataset.statusId?.trim().toLowerCase();
+        const label = (e.dataset.tooltipText || game.i18n.localize(e.dataset.tooltip))?.trim().toLowerCase();
+        e.hidden = !(id.match(term) || label.match(term))
+      }
     }
   });
 
   qssQuickInput.addEventListener('keypress', e => {
     debug('got keypress:', e.key, game.qssSearchTerm);
     if (e.key === 'Enter' && qssQuickInput.value.trim()) {
-      /** @type {NodeListOf<HTMLElement>} */
-      const effects = statusEffects.querySelectorAll('.effect-control');
-      for (const e of effects) {
-        if (!e.hidden) {
-          e.click();
-          break;
+      if (monksActive) {
+        /** @type {NodeListOf<HTMLElement>} */
+        const containers = statusEffects.querySelectorAll('.effect-container');
+        for (const container of containers) {
+          if (!container.hidden) {
+            const icon = container.querySelector('.effect-control');
+            icon?.click();
+            break;
+          }
+        }
+      } else {
+        /** @type {NodeListOf<HTMLElement>} */
+        const effects = statusEffects.querySelectorAll('.effect-control');
+        for (const e of effects) {
+          if (!e.hidden) {
+            e.click();
+            break;
+          }
         }
       }
     }
