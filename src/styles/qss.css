@@ -3,3 +3,8 @@
   top: -2.5rem;
   left: 0rem;
 }
+
+#token-hud.monks-little-details .qss-quick-input {
+  right: 6.2rem;
+  width: calc(100% - 6.2rem);
+}
